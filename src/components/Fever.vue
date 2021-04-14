@@ -149,7 +149,7 @@ export default {
       formData.append('api_key', hash)
       const data = JSON.parse(JSON.stringify(this.fever))
       data.hash = hash
-      axios.post(`${this.fever.endpoint}?api`, formData)
+      window.fever.login(this.fever.endpoint, formData)
         .then(async (res) => {
           if (!res.data.auth) {
             this.fever_error = true

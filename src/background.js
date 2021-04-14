@@ -27,6 +27,7 @@ import path from 'path'
 import { URL } from 'url'
 import dayjs from 'dayjs'
 import i18nextMainBackend from './i18nmain.config'
+import { parseArticle } from './main/article'
 const i18nextBackend = require('i18next-electron-fs-backend')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -69,7 +70,6 @@ async function createWindow () {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       webviewTag: true,
-      webSecurity: false,
       contextIsolation: true,
       worldSafeExecuteJavaScript: true,
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -148,6 +148,8 @@ async function createWindow () {
 
   app.commandLine.appendSwitch('lang', app.getLocale())
 
+  tray = createTray(win, i18nextMainBackend)
+
   // Set up necessary bindings to update the menu items
   // based on the current language selected
   i18nextMainBackend.on('loaded', (loaded) => {
@@ -157,7 +159,6 @@ async function createWindow () {
 
   i18nextMainBackend.on('languageChanged', (lng) => {
     menu = createMenu(win, i18nextMainBackend)
-    tray = createTray(win, i18nextMainBackend)
   })
 
   if (store.get('settings.start_in_trays')) { win.hide() }
@@ -309,6 +310,51 @@ ipcMain.handle('article-selected', (event, status) => {
 
 ipcMain.on('online-status-changed', (event, status) => {
   event.sender.send('onlinestatus', status)
+})
+
+ipcMain.handle('parse-article', async (event, url) => {
+  return await parseArticle(url)
+})
+
+ipcMain.handle('instapaper-login', async (event, data) => {
+  const result = await axios.post('https://www.instapaper.com/api/authenticate', {}, {
+    auth: data
+  })
+  return result.data
+})
+
+ipcMain.handle('instapaper-save', async (event, data) => {
+  const result = await axios.post(`https://www.instapaper.com/api/add?url=${data.url}`, {}, {
+    auth: {
+      username: data.username,
+      password: data.password
+    }
+  })
+  return result.data
+})
+
+ipcMain.handle('save-pocket', async (event, data) => {
+  const result = await axios.post('https://getpocket.com/v3/add', {
+    url: data.url,
+    access_token: data.credentials.access_token,
+    consumer_key: data.credentials.consumer_key
+  })
+  return result.data
+})
+
+ipcMain.handle('fever-login', async (event, data) => {
+  const result = await axios.post(`${data.endpoint}?api`, data.formData)
+  return result.data
+})
+
+ipcMain.handle('fever-endpoint-execute', async (event, data) => {
+  const result = await axios.post(data.endpoint, data.formData)
+  return result.data
+})
+
+ipcMain.handle('google-endpoint-execute', async (event, data) => {
+  const result = await axios.post(data.endpoint, data.formData)
+  return result.data
 })
 
 app.on('activate', () => {

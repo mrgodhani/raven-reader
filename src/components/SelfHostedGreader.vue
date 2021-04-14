@@ -87,7 +87,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import db from '../services/db'
 import greader from '../services/greader'
 
@@ -145,7 +144,7 @@ export default {
       const urlencoded = new URLSearchParams()
       urlencoded.append('Email', this.selfhosted.username)
       urlencoded.append('Passwd', this.selfhosted.password)
-      axios.post(`${this.selfhosted.endpoint}/accounts/ClientLogin`, urlencoded)
+      window.greader.login(`${this.selfhosted.endpoint}/accounts/ClientLogin`, urlencoded)
         .then(async (res) => {
           const matches = res.data.match(/Auth=(\S+)/)
           const data = JSON.parse(JSON.stringify(this.selfhosted))

@@ -31,9 +31,6 @@ export default {
         retryCount: 0,
         https: { rejectUnauthorized: false }
       }
-      // feedParserOptions: {
-      //   feedUrl: url
-      // }
     })
   }
 }

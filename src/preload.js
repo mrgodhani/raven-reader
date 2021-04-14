@@ -5,6 +5,11 @@ import {
 import rssService from './bridge/rss'
 import electronStore from './bridge/electronstore'
 import electronService from './bridge/electron'
+import parserService from './bridge/mercury'
+import instapaperService from './bridge/instapaper'
+import pocketService from './bridge/pocket'
+import feverService from './bridge/fever'
+import greaderService from './bridge/greader'
 const backend = require('i18next-electron-fs-backend')
 
 ipcRenderer.setMaxListeners(0)
@@ -38,11 +43,16 @@ const validChannels = [
   'power-resume'
 ]
 
+contextBridge.exposeInMainWorld('greader', greaderService)
 contextBridge.exposeInMainWorld('log', require('electron-log'))
+contextBridge.exposeInMainWorld('mercury', parserService)
 contextBridge.exposeInMainWorld('fs', require('fs'))
 contextBridge.exposeInMainWorld('electronstore', electronStore)
 contextBridge.exposeInMainWorld('rss', rssService)
 contextBridge.exposeInMainWorld('electron', electronService)
+contextBridge.exposeInMainWorld('instapaper', instapaperService)
+contextBridge.exposeInMainWorld('pocket', pocketService)
+contextBridge.exposeInMainWorld('fever', feverService)
 contextBridge.exposeInMainWorld('globalagent', require('global-agent'))
 contextBridge.exposeInMainWorld('api', {
   i18nextElectronBackend: backend.preloadBindings(ipcRenderer),

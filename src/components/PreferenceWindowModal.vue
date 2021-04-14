@@ -584,6 +584,10 @@ export default {
     disconnectInstapaper () {
       this.$store.dispatch('unsetInstapaper')
       this.instapaper_connected = false
+      this.instapaper = {
+        username: null,
+        password: null
+      }
     },
     onHiddenInstapaper () {
       this.instapaper.username = null
@@ -594,18 +598,14 @@ export default {
     },
     loginInstapaper () {
       this.instapaper_error = false
-      axios.post('https://www.instapaper.com/api/authenticate', {}, {
-        auth: {
-          username: this.instapaper.username,
-          password: this.instapaper.password
-        }
-      }).then(() => {
-        this.$refs.instapaperLogin.hide()
-        this.$store.dispatch('setInstapaper', JSON.stringify(this.instapaper))
-        this.instapaper_connected = true
-      }).catch(() => {
-        this.instapaper_error = true
-      })
+      window.instapaper.login(this.instapaper.username, this.instapaper.password)
+        .then(() => {
+          this.$refs.instapaperLogin.hide()
+          this.$store.dispatch('setInstapaper', JSON.stringify(this.instapaper))
+          this.instapaper_connected = true
+        }).catch(() => {
+          this.instapaper_error = true
+        })
     },
     deleteAllData () {
       db.deleteAllData().then(() => {

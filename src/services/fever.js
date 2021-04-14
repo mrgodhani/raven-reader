@@ -1,4 +1,3 @@
-import axios from 'axios'
 import db from './db.js'
 import uuidstring from 'uuid-by-string'
 import * as database from '../db'
@@ -19,8 +18,8 @@ export default {
     try {
       const formData = new FormData()
       formData.append('api_key', credsData.hash)
-      const subscriptions = await axios.post(`${credsData.endpoint}?api&feeds`, formData)
-      return subscriptions.data.feeds
+      const subscriptions = await window.fever.subscriptions(`${credsData.endpoint}?api&feeds`, formData)
+      return subscriptions.feeds
     } catch (e) {
       window.log.info(e)
     }
@@ -29,8 +28,8 @@ export default {
     try {
       const formData = new FormData()
       formData.append('api_key', credsData.hash)
-      const unread = await axios.post(`${credsData.endpoint}?api&unread_item_ids`, formData)
-      return unread.data.unread_item_ids
+      const unread = await window.fever.unreadIds(`${credsData.endpoint}?api&unread_item_ids`, formData)
+      return unread.unread_item_ids
     } catch (e) {
       window.log.info(e)
     }
@@ -39,7 +38,7 @@ export default {
     try {
       const formData = new FormData()
       formData.append('api_key', credsData.hash)
-      const starred = await axios.post(`${credsData.endpoint}?api&saved_item_ids`, formData)
+      const starred = await window.fever.starredIds(`${credsData.endpoint}?api&saved_item_ids`, formData)
       return starred.data.saved_item_ids
     } catch (e) {
       window.log.info(e)
@@ -63,7 +62,7 @@ export default {
       for (let i = 0; i < chunks.length; i++) {
         const formData = new FormData()
         formData.append('api_key', credsData.hash)
-        const data = await axios.post(`${credsData.endpoint}?api&items&with_ids=${chunks[i].join(',')}&since_id`, formData)
+        const data = await window.fever.entries(`${credsData.endpoint}?api&items&with_ids=${chunks[i].join(',')}&since_id`, formData)
         entries.push(...data.data.items)
       }
       return entries
@@ -89,12 +88,12 @@ export default {
         endpoint = `${credsData.endpoint}?api&mark=item&as=unsaved&id=${id}`
         break
     }
-    return await axios.post(endpoint, formData)
+    return await window.fever.markItem(endpoint, formData)
   },
   async getGroups (credsData) {
     const formData = new FormData()
     formData.append('api_key', credsData.hash)
-    const groups = await axios.post(`${credsData.endpoint}?api&groups`, formData)
+    const groups = await window.fever.groups(`${credsData.endpoint}?api&groups`, formData)
     return {
       groups: groups.data.groups,
       feed_groups: groups.data.feeds_groups.map((item) => {
