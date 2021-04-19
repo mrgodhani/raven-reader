@@ -28,6 +28,7 @@ import { URL } from 'url'
 import dayjs from 'dayjs'
 import i18nextMainBackend from './i18nmain.config'
 import { parseArticle } from './main/article'
+const FormData = require('form-data')
 const i18nextBackend = require('i18next-electron-fs-backend')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -343,12 +344,32 @@ ipcMain.handle('save-pocket', async (event, data) => {
 })
 
 ipcMain.handle('fever-login', async (event, data) => {
-  const result = await axios.post(`${data.endpoint}?api`, data.formData)
+  console.log(data)
+  const formData = new FormData()
+  formData.append('api_key', data.formData)
+  console.log(formData)
+  const config = {
+    url: `${data.endpoint}?api`,
+    method: 'post',
+    data: formData,
+    headers: {
+      ...formData.getHeaders()
+    }
+  }
+  const result = await axios(config)
+  console.log(result)
   return result.data
 })
 
 ipcMain.handle('fever-endpoint-execute', async (event, data) => {
-  const result = await axios.post(data.endpoint, data.formData)
+  console.log(data)
+  const formData = new FormData()
+  formData.append('api_key', data.formData)
+  const result = await axios.post(data.endpoint, formData, {
+    headers: {
+      ...formData.getHeaders()
+    }
+  })
   return result.data
 })
 

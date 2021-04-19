@@ -39,6 +39,7 @@
     "electron-util": "^0.15.0",
     "fast-xml-parser": "^3.18.0",
     "feather-icons": "^4.28.0",
+    "form-data": "^4.0.0",
     "fuse.js": "^6.4.1",
     "global-agent": "^2.1.12",
     "i18next": "^20.1.0",

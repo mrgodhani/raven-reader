@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron'
 
 export default {
   login: async (endpoint, formData) => {
-    return await ipcRenderer.invoke('fever-endpoint-execute', {
+    return await ipcRenderer.invoke('fever-login', {
       endpoint: endpoint,
       formData: formData
     })
@@ -25,7 +25,7 @@ export default {
       formData: formData
     })
   },
-  entries: async (endpoint, ids, formData) => {
+  entries: async (endpoint, formData) => {
     return await ipcRenderer.invoke('fever-endpoint-execute', {
       endpoint: endpoint,
       formData: formData

@@ -16,9 +16,7 @@ function getCoverImage (postContent) {
 export default {
   async getSubscriptions (credsData) {
     try {
-      const formData = new FormData()
-      formData.append('api_key', credsData.hash)
-      const subscriptions = await window.fever.subscriptions(`${credsData.endpoint}?api&feeds`, formData)
+      const subscriptions = await window.fever.subscriptions(`${credsData.endpoint}?api&feeds`, credsData.hash)
       return subscriptions.feeds
     } catch (e) {
       window.log.info(e)
@@ -26,9 +24,7 @@ export default {
   },
   async getUnreadIds (credsData) {
     try {
-      const formData = new FormData()
-      formData.append('api_key', credsData.hash)
-      const unread = await window.fever.unreadIds(`${credsData.endpoint}?api&unread_item_ids`, formData)
+      const unread = await window.fever.unreadIds(`${credsData.endpoint}?api&unread_item_ids`, credsData.hash)
       return unread.unread_item_ids
     } catch (e) {
       window.log.info(e)
@@ -36,10 +32,8 @@ export default {
   },
   async getStarredIds (credsData) {
     try {
-      const formData = new FormData()
-      formData.append('api_key', credsData.hash)
-      const starred = await window.fever.starredIds(`${credsData.endpoint}?api&saved_item_ids`, formData)
-      return starred.data.saved_item_ids
+      const starred = await window.fever.starredIds(`${credsData.endpoint}?api&saved_item_ids`, credsData.hash)
+      return starred.saved_item_ids
     } catch (e) {
       window.log.info(e)
     }
@@ -60,10 +54,8 @@ export default {
     }, [])
     try {
       for (let i = 0; i < chunks.length; i++) {
-        const formData = new FormData()
-        formData.append('api_key', credsData.hash)
-        const data = await window.fever.entries(`${credsData.endpoint}?api&items&with_ids=${chunks[i].join(',')}&since_id`, formData)
-        entries.push(...data.data.items)
+        const data = await window.fever.entries(`${credsData.endpoint}?api&items&with_ids=${chunks[i].join(',')}&since_id`, credsData.hash)
+        entries.push(...data.items)
       }
       return entries
     } catch (e) {
@@ -71,8 +63,6 @@ export default {
     }
   },
   async markItem (credsData, type, id) {
-    const formData = new FormData()
-    formData.append('api_key', credsData.hash)
     let endpoint
     switch (type) {
       case 'READ':
@@ -88,15 +78,13 @@ export default {
         endpoint = `${credsData.endpoint}?api&mark=item&as=unsaved&id=${id}`
         break
     }
-    return await window.fever.markItem(endpoint, formData)
+    return await window.fever.markItem(endpoint, credsData.hash)
   },
   async getGroups (credsData) {
-    const formData = new FormData()
-    formData.append('api_key', credsData.hash)
-    const groups = await window.fever.groups(`${credsData.endpoint}?api&groups`, formData)
+    const groups = await window.fever.groups(`${credsData.endpoint}?api&groups`, credsData.hash)
     return {
-      groups: groups.data.groups,
-      feed_groups: groups.data.feeds_groups.map((item) => {
+      groups: groups.groups,
+      feed_groups: groups.feeds_groups.map((item) => {
         item.feed_ids = item.feed_ids.split(',').map(item => parseInt(item))
         return item
       })
