@@ -344,10 +344,8 @@ ipcMain.handle('save-pocket', async (event, data) => {
 })
 
 ipcMain.handle('fever-login', async (event, data) => {
-  console.log(data)
   const formData = new FormData()
   formData.append('api_key', data.formData)
-  console.log(formData)
   const config = {
     url: `${data.endpoint}?api`,
     method: 'post',
@@ -357,12 +355,10 @@ ipcMain.handle('fever-login', async (event, data) => {
     }
   }
   const result = await axios(config)
-  console.log(result)
   return result.data
 })
 
 ipcMain.handle('fever-endpoint-execute', async (event, data) => {
-  console.log(data)
   const formData = new FormData()
   formData.append('api_key', data.formData)
   const result = await axios.post(data.endpoint, formData, {
@@ -374,7 +370,11 @@ ipcMain.handle('fever-endpoint-execute', async (event, data) => {
 })
 
 ipcMain.handle('google-endpoint-execute', async (event, data) => {
-  const result = await axios.post(data.endpoint, data.formData)
+  const result = await axios.post(data.endpoint, data.formData, {
+    headers: {
+      Authorization: `GoogleLogin auth=${data.auth}`
+    }
+  })
   return result.data
 })
 
